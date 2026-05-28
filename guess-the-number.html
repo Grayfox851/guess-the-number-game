@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Number Game</title>
+    <style>
+        /* CSS - Makes the game look nice */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .game-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        .instructions {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        input {
+            width: 100px;
+            padding: 10px;
+            font-size: 18px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        button {
+            padding: 10px 30px;
+            font-size: 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+        }
+        
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+        
+        .message.hint {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .stats {
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .emoji {
+            font-size: 50px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎮 Guess the Number!</h1>
+        
+        <div class="instructions">
+            I'm thinking of a number between <strong>1 and 100</strong>.<br>
+            Can you guess it?
+        </div>
+        
+        <div>
+            <input type="number" id="guessInput" min="1" max="100" placeholder="Enter guess">
+        </div>
+        
+        <div>
+            <button onclick="makeGuess()">Submit Guess</button>
+            <button onclick="resetGame()">New Game</button>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="stats">
+            <div>Attempts: <strong id="attempts">0</strong></div>
+            <div>Previous guesses: <span id="previousGuesses">None yet</span></div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript - Makes the game work!
+        
+        // Variables store information
+        let secretNumber;           // The number to guess
+        let attempts;               // How many guesses made
+        let guessHistory;           // List of previous guesses
+        
+        // This function starts a new game
+        function resetGame() {
+            // Math.random() gives a random number between 0 and 1
+            // We multiply by 100 and add 1 to get a number between 1 and 100
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            guessHistory = [];
+            
+            // Update the display
+            document.getElementById('attempts').textContent = '0';
+            document.getElementById('previousGuesses').textContent = 'None yet';
+            document.getElementById('message').textContent = '';
+            document.getElementById('message').className = 'message';
+            document.getElementById('guessInput').value = '';
+            document.getElementById('guessInput').disabled = false;
+            
+            console.log('Secret number is: ' + secretNumber); // Cheat code for learning!
+        }
+        
+        // This function runs when you click "Submit Guess"
+        function makeGuess() {
+            // Get the number from the input box
+            const guessInput = document.getElementById('guessInput');
+            const guess = parseInt(guessInput.value);
+            
+            // Check if the input is valid
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                showMessage('Please enter a number between 1 and 100!', 'hint');
+                return;
+            }
+            
+            // Add to attempts counter
+            attempts++;
+            guessHistory.push(guess);
+            
+            // Update the display
+            document.getElementById('attempts').textContent = attempts;
+            document.getElementById('previousGuesses').textContent = guessHistory.join(', ');
+            
+            // Check if the guess is correct
+            if (guess === secretNumber) {
+                // Winner!
+                showMessage('🎉 Congratulations! You guessed it in ' + attempts + ' attempts!', 'success');
+                document.getElementById('guessInput').disabled = true;
+            } else if (guess < secretNumber) {
+                // Too low
+                showMessage('📈 Too low! Try a higher number.', 'hint');
+            } else {
+                // Too high
+                showMessage('📉 Too high! Try a lower number.', 'hint');
+            }
+            
+            // Clear the input for next guess
+            guessInput.value = '';
+            guessInput.focus();
+        }
+        
+        // Helper function to show messages
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+        }
+        
+        // Allow pressing Enter to submit guess
+        document.getElementById('guessInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                makeGuess();
+            }
+        });
+        
+        // Start the game when page loads
+        resetGame();
+    </script>
+</body>
+</html>
